@@ -8,6 +8,7 @@ body {
   padding: 20px;
   background-color: #f4f6f9;
   color: #222;
+  overflow-y: scroll;
 }
 
 header {
@@ -74,23 +75,16 @@ h1 {
 .banner {
   width: 100%;
   max-width: 1150px;
-  min-height: 66px; /* 固定維持至少兩行的高度，不會因為一行字而縮水 */
+  min-height: 66px;
   margin: 0 auto 16px;
   padding: 12px 18px;
-  display: block; /* ★ 改回正常段落排版，文字就不會被切成好幾欄 */
+  display: block;
   line-height: 1.5;
   background-color: #fff3cd;
   border: 1px solid #ffeeba;
   color: #856404;
   border-radius: 8px;
   font-size: 14px;
-}
-
-.sub-tip {
-  display: inline-block;
-  margin-left: 8px;
-  color: #664d03;
-  font-size: 13px;
 }
 
 .hidden {
@@ -124,10 +118,8 @@ body.editing .map-wrapper {
   font-size: 13px;
 }
 
-.filter-group select {
-  padding: 4px 8px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+.toolbar-tip {
+  color: #555;
 }
 
 .zoom-btns {
@@ -162,7 +154,7 @@ body.editing .map-wrapper {
 
 .map-canvas {
   position: relative;
-  width: 900px; /* 固定基準寬度確保百分比座標永遠精準對齊底圖 */
+  width: 900px;
   transform-origin: top center;
   user-select: none;
 }
@@ -181,77 +173,58 @@ body.editing .map-wrapper {
   height: 100%;
 }
 
+/* 編輯模式下游標變成十字準星，方便精準瞄準車站編號 */
+body.editing .station-layer {
+  cursor: crosshair;
+}
+
+/* ==================== 隨點隨建的印記膠囊 ==================== */
 .map-pin {
   position: absolute;
   transform: translate(-50%, -50%);
-  /* 尺寸對齊官方路線圖的車站編號小膠囊（約 15px x 21px） */
-  width: 15px;
-  height: 21px;
+  width: 16px;
+  height: 22px;
   border-radius: 4px;
-  transition: all 0.15s;
-  /* 瀏覽模式下，未蓋章的站完全透明 */
-  background-color: transparent;
-  border: 1.5px solid transparent;
-}
-
-/* 轉乘站（編號有兩格併排，例如 BL11/G12）自動加寬成雙格膠囊 */
-.map-pin.transfer {
-  width: 30px;
-}
-
-/* 1. 【編輯模式中】顯示小框框方便點選，已選取的站顯示橘色框（尚未變灰） */
-/* 1. 【編輯模式中】顯示小框框方便點選與拖曳，已選取的站顯示橘色框（尚未變灰） */
-.map-pin {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  width: 15px;
-  height: 21px;
-  border-radius: 4px;
-  /* 只針對顏色過渡，不要對 left/top/transform 做動畫延遲 */
   transition: background-color 0.15s, border-color 0.15s;
-  background-color: transparent;
-  border: 1.5px solid transparent;
 }
 
+/* 轉乘站（雙格寬度，按住 Shift 點擊底圖可建立雙格寬印記） */
+.map-pin.transfer {
+  width: 31px;
+}
+
+/* 【編輯模式中】顯示顯眼的橘紅色標記，按住可微調位置，點一下可刪除 */
 body.editing .map-pin {
   cursor: grab;
-  border: 2px solid #0055ff; /* 顯眼的亮藍色實線框 */
-  background-color: rgba(255, 255, 255, 0.75); /* 白底微透 */
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
-  z-index: 15;
+  border: 2px solid #d84315;
+  background-color: rgba(255, 112, 67, 0.7);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.35);
+  z-index: 20;
 }
 
 body.editing .map-pin:hover {
-  border-color: #ff6d00;
-  background-color: rgba(255, 235, 59, 0.5);
-  z-index: 20;
+  border-color: #b71c1c;
+  background-color: rgba(255, 82, 82, 0.85);
+  z-index: 30;
 }
 
 body.editing .map-pin.dragging {
   cursor: grabbing;
-  border-color: #d50000;
-  background-color: rgba(255, 235, 59, 0.75);
   z-index: 50;
 }
 
-body.editing .map-pin.stamped {
-  border-color: #e65100;
-  background-color: rgba(255, 152, 0, 0.45);
-  box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.3);
-}
-
-/* 2. 【完成編輯後（瀏覽模式）】已蓋章的站才正式蓋上灰色小膠囊，把編號壓成灰色 */
-body:not(.editing) .map-pin.stamped {
+/* 【完成編輯後（瀏覽模式）】自動轉成灰色小膠囊，把原本鮮豔的站號壓成灰色 */
+body:not(.editing) .map-pin {
   background-color: rgba(165, 165, 165, 0.85);
-  border-color: #888888;
+  border: 1.5px solid #888888;
   z-index: 10;
+  pointer-events: none;
 }
 
-/* ==================== 下方清單與其他景點 ==================== */
-.station-checklist-section,
+/* ==================== 其他景點卡片區 ==================== */
 .custom-spots {
   max-width: 1150px;
-  margin: 0 auto 32px;
+  margin: 0 auto 40px;
 }
 
 .section-header {
@@ -287,13 +260,13 @@ body:not(.editing) .map-pin.stamped {
 
 .spot-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
   gap: 10px;
 }
 
 .spot-card {
   background: #ffffff;
-  padding: 10px 14px;
+  padding: 12px 14px;
   border-radius: 8px;
   border-left: 5px solid #0070bd;
   border-top: 1px solid #e0e0e0;
@@ -308,14 +281,6 @@ body:not(.editing) .map-pin.stamped {
   user-select: none;
 }
 
-/* 各路線代表色邊條 */
-.spot-card[data-line="BR"] { border-left-color: #c48c31; }
-.spot-card[data-line="R"]  { border-left-color: #e3002c; }
-.spot-card[data-line="G"]  { border-left-color: #008659; }
-.spot-card[data-line="O"]  { border-left-color: #f8b61c; }
-.spot-card[data-line="BL"] { border-left-color: #0070bd; }
-.spot-card[data-line="Y"]  { border-left-color: #ffdb00; }
-
 body.editing .spot-card {
   cursor: pointer;
 }
@@ -324,10 +289,9 @@ body.editing .spot-card:hover {
   background-color: #fffde7;
 }
 
-/* 已蓋章變灰色 */
 .spot-card.stamped {
   background-color: #eaeaea;
-  border-left-color: #b0b0b0 !important;
+  border-left-color: #b0b0b0;
   color: #999999;
   font-weight: 500;
 }
@@ -337,7 +301,7 @@ body.editing .spot-card:hover {
   border: none;
   color: #d32f2f;
   border-radius: 4px;
-  padding: 2px 6px;
+  padding: 3px 7px;
   font-size: 12px;
   cursor: pointer;
 }
