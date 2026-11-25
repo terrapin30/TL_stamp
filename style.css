@@ -1,0 +1,343 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", sans-serif;
+  margin: 0;
+  padding: 20px;
+  background-color: #f4f6f9;
+  color: #222;
+}
+
+header {
+  max-width: 1150px;
+  margin: 0 auto 16px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.badge {
+  background-color: #e3f2fd;
+  color: #0070bd;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background-color: #0070bd;
+  color: #fff;
+  border: 1px solid #0070bd;
+}
+
+.btn-primary.active {
+  background-color: #d9534f;
+  border-color: #d9534f;
+}
+
+.btn-outline {
+  background-color: #fff;
+  color: #444;
+  border: 1px solid #ccc;
+}
+
+.banner {
+  width: 100%;
+  max-width: 1150px;
+  min-height: 66px; /* 固定維持至少兩行的高度，不會因為一行字而縮水 */
+  margin: 0 auto 16px;
+  padding: 12px 18px;
+  display: block; /* ★ 改回正常段落排版，文字就不會被切成好幾欄 */
+  line-height: 1.5;
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+  color: #856404;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.sub-tip {
+  display: inline-block;
+  margin-left: 8px;
+  color: #664d03;
+  font-size: 13px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ==================== 地圖容器 ==================== */
+.map-wrapper {
+  max-width: 1150px;
+  margin: 0 auto 28px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  border: 2px solid transparent;
+}
+
+body.editing .map-wrapper {
+  border-color: #ff9800;
+}
+
+.map-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background-color: #fafafa;
+  border-bottom: 1px solid #eee;
+  font-size: 13px;
+}
+
+.filter-group select {
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.zoom-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-icon {
+  padding: 4px 10px;
+  border: 1px solid #ccc;
+  background: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.map-viewport {
+  width: 100%;
+  height: 750px;
+  overflow: hidden;
+  position: relative;
+  cursor: grab;
+  background-color: #eef1f5;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.map-viewport:active {
+  cursor: grabbing;
+}
+
+.map-canvas {
+  position: relative;
+  width: 900px; /* 固定基準寬度確保百分比座標永遠精準對齊底圖 */
+  transform-origin: top center;
+  user-select: none;
+}
+
+#mrtBgImage {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.station-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.map-pin {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  /* 尺寸對齊官方路線圖的車站編號小膠囊（約 15px x 21px） */
+  width: 15px;
+  height: 21px;
+  border-radius: 4px;
+  transition: all 0.15s;
+  /* 瀏覽模式下，未蓋章的站完全透明 */
+  background-color: transparent;
+  border: 1.5px solid transparent;
+}
+
+/* 轉乘站（編號有兩格併排，例如 BL11/G12）自動加寬成雙格膠囊 */
+.map-pin.transfer {
+  width: 30px;
+}
+
+/* 1. 【編輯模式中】顯示小框框方便點選，已選取的站顯示橘色框（尚未變灰） */
+/* 1. 【編輯模式中】顯示小框框方便點選與拖曳，已選取的站顯示橘色框（尚未變灰） */
+.map-pin {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 15px;
+  height: 21px;
+  border-radius: 4px;
+  /* 只針對顏色過渡，不要對 left/top/transform 做動畫延遲 */
+  transition: background-color 0.15s, border-color 0.15s;
+  background-color: transparent;
+  border: 1.5px solid transparent;
+}
+
+body.editing .map-pin {
+  cursor: grab;
+  border: 2px solid #0055ff; /* 顯眼的亮藍色實線框 */
+  background-color: rgba(255, 255, 255, 0.75); /* 白底微透 */
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+  z-index: 15;
+}
+
+body.editing .map-pin:hover {
+  border-color: #ff6d00;
+  background-color: rgba(255, 235, 59, 0.5);
+  z-index: 20;
+}
+
+body.editing .map-pin.dragging {
+  cursor: grabbing;
+  border-color: #d50000;
+  background-color: rgba(255, 235, 59, 0.75);
+  z-index: 50;
+}
+
+body.editing .map-pin.stamped {
+  border-color: #e65100;
+  background-color: rgba(255, 152, 0, 0.45);
+  box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.3);
+}
+
+/* 2. 【完成編輯後（瀏覽模式）】已蓋章的站才正式蓋上灰色小膠囊，把編號壓成灰色 */
+body:not(.editing) .map-pin.stamped {
+  background-color: rgba(165, 165, 165, 0.85);
+  border-color: #888888;
+  z-index: 10;
+}
+
+/* ==================== 下方清單與其他景點 ==================== */
+.station-checklist-section,
+.custom-spots {
+  max-width: 1150px;
+  margin: 0 auto 32px;
+}
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 19px;
+}
+
+.sub-hint {
+  font-size: 13px;
+  color: #666;
+}
+
+.add-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.add-form input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+.spot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 10px;
+}
+
+.spot-card {
+  background: #ffffff;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border-left: 5px solid #0070bd;
+  border-top: 1px solid #e0e0e0;
+  border-right: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+  color: #111111;
+  font-weight: 700;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+
+/* 各路線代表色邊條 */
+.spot-card[data-line="BR"] { border-left-color: #c48c31; }
+.spot-card[data-line="R"]  { border-left-color: #e3002c; }
+.spot-card[data-line="G"]  { border-left-color: #008659; }
+.spot-card[data-line="O"]  { border-left-color: #f8b61c; }
+.spot-card[data-line="BL"] { border-left-color: #0070bd; }
+.spot-card[data-line="Y"]  { border-left-color: #ffdb00; }
+
+body.editing .spot-card {
+  cursor: pointer;
+}
+
+body.editing .spot-card:hover {
+  background-color: #fffde7;
+}
+
+/* 已蓋章變灰色 */
+.spot-card.stamped {
+  background-color: #eaeaea;
+  border-left-color: #b0b0b0 !important;
+  color: #999999;
+  font-weight: 500;
+}
+
+.delete-btn {
+  background: #ffebee;
+  border: none;
+  color: #d32f2f;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 12px;
+  cursor: pointer;
+}

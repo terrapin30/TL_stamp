@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>台北捷運全線集章地圖</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="title-group">
+      <h1>台北集章紀錄地圖</h1>
+      <span id="progressText" class="badge">進度：0 / 0</span>
+    </div>
+    <div class="controls">
+      <button id="exportBtn" class="btn btn-outline">匯出備份</button>
+      <button id="importBtn" class="btn btn-outline">匯入備份</button>
+      <input type="file" id="importFile" accept=".json" class="hidden">
+      <button id="editBtn" class="btn btn-primary">編輯地圖</button>
+    </div>
+  </header>
+
+  <div id="editBanner" class="banner hidden">
+    <strong>編輯模式開啟中：點擊地圖上的捷運站或下方景點即可切換「已蓋章（變灰）／未蓋章」。</strong>
+    <span class="sub-tip">（小技巧：按住鍵盤 <b>Shift</b> 再點擊地圖，可微調該站位置）</span>
+  </div>
+
+  <!-- 北捷官方原圖互動容器 -->
+  <main class="map-wrapper">
+    <div class="map-toolbar">
+      <div class="filter-group">
+        <span>路線快速篩選：</span>
+        <select id="lineFilter">
+          <option value="ALL">全部路線 (135站)</option>
+          <option value="BR">文湖線 (BR)</option>
+          <option value="R">淡水信義線 (R)</option>
+          <option value="G">松山新店線 (G)</option>
+          <option value="O">中和新蘆線 (O)</option>
+          <option value="BL">板南線 (BL)</option>
+          <option value="Y">環狀線 (Y)</option>
+        </select>
+      </div>
+      <div class="zoom-btns">
+        <button id="zoomOutBtn" class="btn-icon">－ 縮小</button>
+        <button id="zoomResetBtn" class="btn-icon">100%</button>
+        <button id="zoomInBtn" class="btn-icon">＋ 放大</button>
+      </div>
+    </div>
+
+    <div id="mapViewport" class="map-viewport">
+      <div id="mapCanvas" class="map-canvas">
+        <!-- 官方北捷路線圖底圖 -->
+        <img src="metrotaipeimap.jpg" alt="台北捷運路線圖" id="mrtBgImage" draggable="false">
+        <!-- JavaScript 會自動把全線 135 站的互動層鋪在這裡 -->
+        <div id="stationLayer" class="station-layer"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 捷運全線車站快速點選清單（方便手機或快速核對） -->
+  <section class="station-checklist-section">
+    <div class="section-header">
+      <h2>捷運各線車站清單（與地圖同步）</h2>
+      <span class="sub-hint">編輯模式下可直接點擊站名切換灰色狀態</span>
+    </div>
+    <div id="stationChecklist" class="spot-grid"></div>
+  </section>
+
+  <!-- 台北市其他景點集章區 -->
+  <section class="custom-spots">
+    <div class="section-header">
+      <h2>台北市其他集章地點</h2>
+      <span class="sub-hint">博物館、遊客中心、古蹟、貓空纜車等</span>
+    </div>
+
+    <div id="addSpotForm" class="add-form hidden">
+      <input type="text" id="newSpotInput" placeholder="輸入新集章地點（例如：北門郵局、剝皮寮歷史街區、貓空纜車）">
+      <button id="addSpotBtn" class="btn btn-primary">＋ 新增地點</button>
+    </div>
+
+    <div id="spotList" class="spot-grid"></div>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
